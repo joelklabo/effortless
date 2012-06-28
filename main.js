@@ -1,7 +1,8 @@
-var watch    = require('watch')
-  , less     = require('less')
-  , optimist = require('optimist')
-  , exec     = require('child_process').exec
+var watch = require('watch')
+  , less  = require('less')
+  , argv  = require('optimist').default('d', '.').argv
+  , exec  = require('child_process').exec
+  , dir   = argv.d
   ;
 
 var compileLess = function (f, file) {
@@ -39,7 +40,7 @@ var isThisLess = function (f) {
   }
 }
 
-watch.createMonitor('.', function (monitor) {
+watch.createMonitor(dir, function (monitor) {
   monitor.on("changed", function (f, curr, prev) {
     var file = isThisLess(f)
     if (file) {
