@@ -1,9 +1,12 @@
 var watch = require('watch')
   , less  = require('less')
-  , argv  = require('optimist').default('d', '.').argv
   , exec  = require('child_process').exec
-  , dir   = argv.d
   ;
+
+var dir = require('optimist')
+          .default('d', '.')
+          .argv
+          .d
 
 var compileLess = function (f, file) {
   return 'less ' + f + ' > ' + file 
