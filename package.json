@@ -11,6 +11,7 @@
 , "author" : "Joel Klabo <joelklabo@gmail.com>"
 , "engines" : ["node >=0.1.95"]
 , "dependencies": {
-  "watch": "*"
+  "watch": "*",
+  "less": "*"
 }
 }
