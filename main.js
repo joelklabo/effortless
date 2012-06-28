@@ -4,13 +4,18 @@ var watch    = require('watch')
   , exec     = require('child_process').exec
   ;
 
-var buildCmd = function (f, file) {
+var compileLess = function (f, file) {
   return 'less ' + f + ' > ' + file 
+}
+
+var deleteFile = function (file) {
+  return 'rm ' + file 
 }
 
 var isThisLess = function (f) {
   var pieces = f.split('.')
     , length = pieces.length
+    , isLess = false
     ;
 
   if (length <= 1) return false
@@ -22,39 +27,34 @@ var isThisLess = function (f) {
     }
     
     if (pieces[i].indexOf('less') > -1) {
+      isLess = true
       pieces[i] = 'css'
     }
   }
 
-  return pieces.join('.') 
+  if (isLess) {
+    return pieces.join('.') 
+  } else {
+    return false
+  }
 }
 
 watch.createMonitor('.', function (monitor) {
-  monitor.on("created", function (f, stat) {
-    // Handle file changes
-    var file = isThisLess(f)
-    if (file) {
-      exec(buildCmd(f, file), function (error, stdout, stderr) {
-        console.log(f, 'was compiled to', file)
-      })
-    }
-    
-  })
   monitor.on("changed", function (f, curr, prev) {
-    // Handle new files
     var file = isThisLess(f)
     if (file) {
-      exec(buildCmd(f, file), function (error, stdout, stderr) {
+      exec(compileLess(f, file), function (error, stdout, stderr) {
         console.log(f, 'was compiled to', file)
       })
     }
 
   })
   monitor.on("removed", function (f, stat) {
-    // Handle removed files
     var file = isThisLess(f)
     if (file) {
-      console.log(f, 'was removed, removing', file)
+      exec(deleteFile(file), function (error, stdout, stderr) {
+        console.log(f, 'was removed, removing', file)
+      })
     }
   })
 })
