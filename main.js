@@ -9,7 +9,7 @@ var dir = require('optimist')
           .d
 
 var compileLess = function (f, file) {
-  return 'less ' + f + ' > ' + file 
+  return 'less ' + f + ' > ../css/' + file 
 }
 
 var deleteFile = function (file) {
