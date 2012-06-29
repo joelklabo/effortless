@@ -2,6 +2,9 @@
 , "description" : "It wathches for .less changes and recompiles"
 , "tags" : ["less", "css", "fs", "files", "utility", "fun!"]
 , "version" : "0.0.1"
+, "bin" : {
+  "effortless": "./main"
+} 
 , "homepage": "https://github.com/joelklabo/effortless"
 , "bugs":
   { "url": "https://github.com/joelklabo/effortless/issues" }
