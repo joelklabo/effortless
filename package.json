@@ -11,7 +11,7 @@
   ],
   "version": "0.0.1",
   "bin": {
-    "effortless": "./main"
+    "effortless": "./main.js"
   },
   "homepage": "https://github.com/joelklabo/effortless",
   "bugs": {
