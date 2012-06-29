@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var watch = require('watch')
   , less  = require('less')
   , exec  = require('child_process').exec
