@@ -3,13 +3,24 @@ var watch = require('watch')
   , exec  = require('child_process').exec
   ;
 
-var dir = require('optimist')
+var argv = require('optimist')
           .default('d', '.')
+          .default('o', '.')
           .argv
-          .d
+          ;
+
+var dir = argv.d
+  , out = argv.o
+  , compress = argv.x
+  ;
 
 var compileLess = function (f, file) {
-  return 'less ' + f + ' > ../css/' + file 
+  if (compress) {
+    return 'lessc -x ' + f + ' > ' + out + '/' + file 
+  } else {
+    console.log('no compress')
+    return 'lessc ' + f + ' > ' + out + '/' + file 
+  }
 }
 
 var deleteFile = function (file) {
