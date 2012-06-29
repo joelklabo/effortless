@@ -11,10 +11,35 @@ var argv = require('optimist')
           .argv
           ;
 
-var dir = argv.d
-  , out = argv.o
+var dir      = argv.d
+  , out      = argv.o
   , compress = argv.x
+  , help     = argv.h
   ;
+
+if (help) {
+  usage = ''
+      + '\n'
+      + 'Effortless\n'
+      + '*********************************************************************************************\n'
+      + 'With no flags, Effortless watches a directory for changes in .less files.\n'
+      + 'When a change is observed the file is compiled into a new css file.\n'
+      + 'Default options are current directory with no minification.\n'
+      + '*********************************************************************************************\n'
+      + '{Usage}: effortless [options]\n'
+      + '\n'
+      + '{Options}:\n'
+      + '  -d,  Directory to watch files in.\n'
+      + '  -o,  Output directory.\n'
+      + '  -x,  Minification flag.\n'
+      + '\n'
+      + '{Example}: effortless -x -d less/ -o css/\n'
+      + '\n'
+      + '';
+  
+  console.log(usage)
+  process.exit()
+}
 
 var compileLess = function (f, file) {
   if (compress) {
