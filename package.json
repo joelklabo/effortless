@@ -1,22 +1,36 @@
-{ "name" : "effortless"
-, "description" : "It wathches for .less changes and recompiles"
-, "tags" : ["less", "css", "fs", "files", "utility", "fun!"]
-, "version" : "0.0.1"
-, "bin" : {
-  "effortless": "./main"
-} 
-, "homepage": "https://github.com/joelklabo/effortless"
-, "bugs":
-  { "url": "https://github.com/joelklabo/effortless/issues" }
-, "repository": { "type": "git"
-  , "url": "git://github.com/joelklabo/effortless.git"
-  }
-, "author" : "Joel Klabo <joelklabo@gmail.com>"
-, "engines" : ["node >=0.1.95"]
-, "preferGlobal": "true"
-, "dependencies": {
-  "watch": "*",
-  "less": "*",
-  "optimist": "*"
-}
+{
+  "name": "effortless",
+  "description": "effortless watches for changes in .less files and automatically compiles them",
+  "tags": [
+    "less",
+    "css",
+    "fs",
+    "files",
+    "utility",
+    "fun!"
+  ],
+  "version": "0.0.1",
+  "bin": {
+    "effortless": "./main"
+  },
+  "homepage": "https://github.com/joelklabo/effortless",
+  "bugs": {
+    "url": "https://github.com/joelklabo/effortless/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joelklabo/effortless.git"
+  },
+  "author": "Joel Klabo <joelklabo@gmail.com>",
+  "engines": [
+    "node >=0.1.95"
+  ],
+  "preferGlobal": "true",
+  "dependencies": {
+    "watch": "*",
+    "less": "*",
+    "optimist": "*"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
 }
