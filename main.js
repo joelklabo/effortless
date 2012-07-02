@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var watch = require('watch')
+  , path  = require('path')
   , less  = require('less')
   , exec  = require('child_process').exec
   ;
@@ -11,8 +12,8 @@ var argv = require('optimist')
           .argv
           ;
 
-var dir      = argv.d
-  , out      = argv.o
+var dir      = path.normalize(argv.d)
+  , out      = path.normalize(argv.o)
   , compress = argv.x
   , help     = argv.h
   ;
@@ -41,12 +42,11 @@ if (help) {
   process.exit()
 }
 
-var compileLess = function (f, file) {
+var compileLess = function (inFile, outFile) {
   if (compress) {
-    return 'lessc -x ' + f + ' > ' + out + '/' + file 
+    return 'lessc -x ' + inFile + ' > ' + outFile 
   } else {
-    console.log('no compress')
-    return 'lessc ' + f + ' > ' + out + '/' + file 
+    return 'lessc ' + inFile + ' > ' + outFile 
   }
 }
 
@@ -54,49 +54,30 @@ var deleteFile = function (file) {
   return 'rm ' + file 
 }
 
-var isThisLess = function (f) {
-  var pieces = f.split('.')
-    , length = pieces.length
-    , isLess = false
-    ;
-
-  if (length <= 1) return false
-
-  for (var i = 0; i < length; i++) {
-  
-    if (pieces[i].indexOf('swp') != -1) {
-      return false
-    }
-    
-    if (pieces[i].indexOf('less') > -1) {
-      isLess = true
-      pieces[i] = 'css'
-    }
-  }
-
-  if (isLess) {
-    return pieces.join('.') 
-  } else {
-    return false
-  }
+var setOutFile = function (inFile) {
+  var fileParts = inFile.split('.')
+  fileParts.splice(-1, 1, 'css')
+  var file = fileParts.join('.').split('/').splice(-1, 1).toString()
+  var outFile = path.join(out, file)
+  return outFile
 }
 
 watch.createMonitor(dir, function (monitor) {
-  monitor.on("changed", function (f, curr, prev) {
-    var file = isThisLess(f)
-    if (file) {
-      exec(compileLess(f, file), function (error, stdout, stderr) {
-        console.log(f, 'was compiled to', file)
+  monitor.on("changed", function (inFile, curr, prev) {
+    if (path.extname(inFile) === '.less') {
+      var outFile = setOutFile(inFile)
+      exec(compileLess(inFile, outFile), function (error, stdout, stderr) {
+        console.log(inFile, 'was compiled to', outFile)
       })
     }
-
   })
-  monitor.on("removed", function (f, stat) {
-    var file = isThisLess(f)
-    if (file) {
-      exec(deleteFile(file), function (error, stdout, stderr) {
-        console.log(f, 'was removed, removing', file)
+  monitor.on("removed", function (inFile, stat) {
+    if (path.extname(inFile) === '.less') {
+      var outFile = setOutFile(inFile)
+      exec(deleteFile(outFile), function (error, stdout, stderr) {
+        console.log(inFile, 'was removed, removing', outFile)
       })
     }
   })
 })
+
