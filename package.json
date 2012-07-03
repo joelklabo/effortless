@@ -29,7 +29,8 @@
   "dependencies": {
     "watch": "*",
     "less": "*",
-    "optimist": "*"
+    "optimist": "*",
+    "findir": "*"
   },
   "devDependencies": {},
   "optionalDependencies": {}
