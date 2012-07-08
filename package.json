@@ -9,7 +9,7 @@
     "utility",
     "fun!"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "bin": {
     "effortless": "./main.js"
   },
@@ -30,7 +30,7 @@
     "watch": "*",
     "less": "*",
     "optimist": "*",
-    "findir": "*"
+    "findir": "0.0.8"
   },
   "devDependencies": {},
   "optionalDependencies": {}

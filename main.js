@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 
-var watch = require('watch')
-  , path  = require('path')
-  , less  = require('less')
-  , exec  = require('child_process').exec
+var watch  = require('watch')
+  , path   = require('path')
+  , less   = require('less')
+  , cwd    = process.cwd()
+  , findir = require('findir')
+  , exec   = require('child_process').exec
   ;
 
 var argv = require('optimist')
-          .default('d', '.')
-          .default('o', '.')
+          .default('d', cwd)
+          .default('o', cwd)
           .argv
           ;
 
-var dir      = path.normalize(argv.d)
-  , out      = path.normalize(argv.o)
+var inDir       = path.normalize(argv.d)
+  , outDir      = path.normalize(argv.o)
   , compress = argv.x
   , help     = argv.h
   ;
@@ -58,26 +60,70 @@ var setOutFile = function (inFile) {
   var fileParts = inFile.split('.')
   fileParts.splice(-1, 1, 'css')
   var file = fileParts.join('.').split('/').splice(-1, 1).toString()
-  var outFile = path.join(out, file)
+  var outFile = path.join(outDir, file)
   return outFile
 }
 
-watch.createMonitor(dir, function (monitor) {
-  monitor.on("changed", function (inFile, curr, prev) {
-    if (path.extname(inFile) === '.less') {
-      var outFile = setOutFile(inFile)
-      exec(compileLess(inFile, outFile), function (error, stdout, stderr) {
-        console.log(inFile, 'was compiled to', outFile)
-      })
-    }
-  })
-  monitor.on("removed", function (inFile, stat) {
-    if (path.extname(inFile) === '.less') {
-      var outFile = setOutFile(inFile)
-      exec(deleteFile(outFile), function (error, stdout, stderr) {
-        console.log(inFile, 'was removed, removing', outFile)
-      })
-    }
-  })
-})
+var specifiedDirectories = function () {
+  if (inDir != cwd || outDir != cwd) {
+    console.log('Using specified directories:', inDir, outDir)
+    return true
+  } else {
+    console.log('No directory was specified, attemping to discover...')
+    return false
+  }
+}
 
+var watchThis = function (inDir, outDir) {
+  console.log('Watching...')
+  watch.createMonitor(inDir, function (monitor) {
+    monitor.on("changed", function (inFile, curr, prev) {
+      if (path.extname(inFile) === '.less') {
+        var outFile = setOutFile(inFile)
+        exec(compileLess(inFile, outFile), function (error, stdout, stderr) {
+          console.log(inFile, 'was compiled to', outFile)
+        })
+      }
+    })
+    monitor.on("removed", function (inFile, stat) {
+      if (path.extname(inFile) === '.less') {
+        var outFile = setOutFile(inFile)
+        exec(deleteFile(outFile), function (error, stdout, stderr) {
+          console.log(inFile, 'was removed, removing', outFile)
+        })
+      }
+    })
+  })
+}
+
+if (specifiedDirectories()) {
+  watchThis(inDir, outDir)
+} else {
+  var opts = { ignore: ['node_modules', '.git'] }
+    , inDir
+    , outDir
+    ;
+
+  findir.find('less', opts, function (lessDir) {
+    if (!lessDir) { 
+      console.log("Couldn't find your LESS directory") 
+    }
+    inDir = lessDir
+    findir.find('css', opts, function (cssDir) {
+      if (!cssDir) { 
+        console.log("Couldn't find your CSS directory") 
+      }
+      outDir = cssDir
+
+      if (inDir && outDir) {
+        console.log('Found directories', inDir, outDir)
+        watchThis(inDir, outDir)
+      } else {
+        // We couldn't find one of the directories
+        process.exit()
+      }
+      
+
+    })
+  })
+}
