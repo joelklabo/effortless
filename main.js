@@ -6,6 +6,7 @@ var watch  = require('watch')
   , cwd    = process.cwd()
   , findir = require('findir')
   , exec   = require('child_process').exec
+  , colors = require('colors')
   ;
 
 var argv = require('optimist')
@@ -23,12 +24,12 @@ var inDir       = path.normalize(argv.d)
 if (help) {
   usage = ''
       + '\n'
-      + 'Effortless\n'
-      + '*********************************************************************************************\n'
+      + 'Effortless\n'.green
+      + '*********************************************************************************************\n'.yellow
       + 'With no flags, Effortless watches a directory for changes in .less files.\n'
       + 'When a change is observed the file is compiled into a new css file.\n'
       + 'Default options are current directory with no minification.\n'
-      + '*********************************************************************************************\n'
+      + '*********************************************************************************************\n'.yellow
       + '{Usage}: effortless [options]\n'
       + '\n'
       + '{Options}:\n'
@@ -36,7 +37,7 @@ if (help) {
       + '  -o,  Output directory.\n'
       + '  -x,  Minification flag.\n'
       + '\n'
-      + '{Example}: effortless -x -d less/ -o css/\n'
+      + '{Example}: effortless -x -d less/ -o css/\n'.blue
       + '\n'
       + '';
   
@@ -66,22 +67,22 @@ var setOutFile = function (inFile) {
 
 var specifiedDirectories = function () {
   if (inDir != cwd || outDir != cwd) {
-    console.log('Using specified directories:', inDir, outDir)
+    console.log('Using specified directories:'.green, inDir + '' + outDir + ''.yellow)
     return true
   } else {
-    console.log('No directory was specified, attemping to discover...')
+    console.log('No directory was specified, attemping to discover...'.blue)
     return false
   }
 }
 
 var watchThis = function (inDir, outDir) {
-  console.log('Watching...')
+  console.log('Watching...'.blue)
   watch.createMonitor(inDir, function (monitor) {
     monitor.on("changed", function (inFile, curr, prev) {
       if (path.extname(inFile) === '.less') {
         var outFile = setOutFile(inFile)
         exec(compileLess(inFile, outFile), function (error, stdout, stderr) {
-          console.log(inFile, 'was compiled to', outFile)
+          console.log(inFile.yellow, 'was compiled to', outFile.green)
         })
       }
     })
@@ -89,7 +90,7 @@ var watchThis = function (inDir, outDir) {
       if (path.extname(inFile) === '.less') {
         var outFile = setOutFile(inFile)
         exec(deleteFile(outFile), function (error, stdout, stderr) {
-          console.log(inFile, 'was removed, removing', outFile)
+          console.log(inFile.red, 'was removed, removing', outFile.red)
         })
       }
     })
@@ -106,17 +107,17 @@ if (specifiedDirectories()) {
 
   findir.find('less', opts, function (lessDir) {
     if (!lessDir) { 
-      console.log("Couldn't find your LESS directory") 
+      console.log("Couldn't find your LESS directory".red) 
     }
     inDir = lessDir
     findir.find('css', opts, function (cssDir) {
       if (!cssDir) { 
-        console.log("Couldn't find your CSS directory") 
+        console.log("Couldn't find your CSS directory".red)
       }
       outDir = cssDir
 
       if (inDir && outDir) {
-        console.log('Found directories', inDir, outDir)
+        console.log('Found directories '.green + inDir.yellow + ' ' + outDir.yellow)
         watchThis(inDir, outDir)
       } else {
         // We couldn't find one of the directories
