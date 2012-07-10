@@ -82,7 +82,7 @@ var watchThis = function (inDir, outDir) {
       if (path.extname(inFile) === '.less') {
         var outFile = setOutFile(inFile)
         exec(compileLess(inFile, outFile), function (error, stdout, stderr) {
-          console.log(inFile.yellow, 'was compiled to', outFile.green)
+          console.log((new Date()).toString().blue + ' ' + inFile.yellow, 'was compiled to', outFile.green)
         })
       }
     })
